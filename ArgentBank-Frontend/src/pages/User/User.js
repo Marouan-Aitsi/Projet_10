@@ -1,7 +1,15 @@
 import Edit from '../../components/Edit/Edit'
 import { Account } from '../../components/Account/Account'
+import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 
 export const User = () => {
+      const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+      // Redirigez vers la page de connexion si l'utilisateur n'est pas connecté
+      if (!isAuthenticated) {
+            return <Navigate to="/" />;
+      }
       return (
             <div>
                   <Edit />

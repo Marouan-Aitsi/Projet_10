@@ -3,12 +3,13 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../redux/actions/authActions';
-import Logo from '../../img/argentBankLogo.png';
+import Logo from '../../img/argentBankLogo.webp';
 
 export const Header = () => {
       const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
       const dispatch = useDispatch();
       const navigate = useNavigate();
+      const userName = useSelector((state) => state.auth.profile?.userName)
 
       const handleLogout = () => {
             dispatch(logoutUser()); // Appelle l'action de déconnexion
@@ -34,7 +35,7 @@ export const Header = () => {
                                           </button>
                                           <Link className="main-nav-item" to="/User/User">
                                                 <i className="fa fa-user-circle"></i>
-                                                Account
+                                                {userName || 'User'}
                                           </Link>
                                     </div>
                               ) : (

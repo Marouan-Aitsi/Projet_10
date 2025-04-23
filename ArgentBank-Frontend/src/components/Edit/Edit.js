@@ -1,79 +1,31 @@
 import "./Edit.css";
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUserProfile, updateUserProfile } from '../../redux/actions/authActions';
 
 export default function Edit() {
-
-      const [userName, setUserName] = useState('');
-      const [firstName, setFirstName] = useState('');
-      const [lastName, setLastName] = useState('');
-
+      const dispatch = useDispatch();
+      const { userName, firstName, lastName } = useSelector((state) => state.auth.profile);
+      const [editedUserName, setEditedUserName] = useState('');
       const [showForm, setShowForm] = useState(false);
 
+      useEffect(() => {
+            dispatch(fetchUserProfile());
+      }, [dispatch]);
 
       useEffect(() => {
-            const fetchUserProfile = async () => {
-                  try {
-                        const token = localStorage.getItem('token');
-                        const response = await fetch('http://localhost:3001/api/v1/user/profile', {
-                              method: 'GET',
-                              headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${token}`,
-                              },
-                        });
+            setEditedUserName(userName);
+      }, [userName]);
 
-                        if (response.ok) {
-                              const data = await response.json();
-
-                              setUserName(data.body.userName || '');
-                              setFirstName(data.body.firstName || '');
-                              setLastName(data.body.lastName || '');
-                        } else {
-                              console.error('Failed to fetch user profile');
-                        }
-                  } catch (error) {
-                        console.error('Error:', error);
-                  }
-            };
-
-            fetchUserProfile();
-      }, []);
-
-      const handleSave = async () => {
-            const updatedUser = {
-                  userName: userName,
-                  firstName: firstName,
-                  lastName: lastName,
-            };
-
-            try {
-                  const token = localStorage.getItem('token');
-
-                  const response = await fetch('http://localhost:3001/api/v1/user/profile', {
-                        method: 'PUT',
-                        headers: {
-                              'Content-Type': 'application/json',
-                              'Authorization': `Bearer ${token}`,
-                        },
-                        body: JSON.stringify(updatedUser),
-                  });
-
-                  if (response.ok) {
-                        const data = await response.json();
-                        console.log('User updated successfully:', data);
-                        setShowForm(false);
-                  } else {
-                        console.error('Failed to update user');
-                  }
-            } catch (error) {
-                  console.error('Error:', error);
-            }
+      const handleSave = () => {
+            dispatch(updateUserProfile({ userName: editedUserName, firstName, lastName }));
+            setShowForm(false);
       };
 
       return (
             <div>
                   {!showForm && (
-                        <div className='edit'>
+                        <div className="edit">
                               <h2>Welcome back, {userName}!</h2>
                               <button className="editInfo" onClick={() => setShowForm(true)}>Edit User Info</button>
                         </div>
@@ -86,9 +38,8 @@ export default function Edit() {
                                     <div className="edit--user__input">
                                           <label htmlFor="UserName">User name: </label>
                                           <input
-                                                id="UserName"
-                                                value={userName}
-                                                onChange={(e) => setUserName(e.target.value)}
+                                                value={editedUserName}
+                                                onChange={(e) => setEditedUserName(e.target.value)}
                                           />
                                     </div>
                                     <div className="edit--user__input">
@@ -109,8 +60,8 @@ export default function Edit() {
                                     </div>
                               </form>
                               <div className="edit--button">
-                                    <button onClick={handleSave}>Save</button>
-                                    <button onClick={() => setShowForm(false)}>Cancel</button>
+                                    <button className="editInfo" onClick={handleSave}>Save</button>
+                                    <button className="editInfo" onClick={() => setShowForm(false)}>Cancel</button>
                               </div>
                         </div>
                   )}

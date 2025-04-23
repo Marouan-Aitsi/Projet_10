@@ -2,6 +2,11 @@ const initialState = {
       isAuthenticated: false,
       token: null,
       error: null,
+      profile: {
+            userName: '',
+            firstName: '',
+            lastName: '',
+      },
 };
 
 const authReducer = (state = initialState, action) => {
@@ -23,6 +28,35 @@ const authReducer = (state = initialState, action) => {
                   return {
                         ...state,
                         error: action.payload, // Utilise directement action.payload, car l'erreur est passée ici
+                  };
+            case 'FETCH_PROFILE_SUCCESS':
+                  return {
+                        ...state,
+                        profile: {
+                              userName: action.payload.userName,
+                              firstName: action.payload.firstName,
+                              lastName: action.payload.lastName,
+                        },
+                        error: null,
+                  };
+            case 'FETCH_PROFILE_FAILURE':
+                  return {
+                        ...state,
+                        error: action.payload,
+                  };
+            case 'UPDATE_PROFILE_SUCCESS':
+                  return {
+                        ...state,
+                        profile: {
+                              ...state.profile,
+                              userName: action.payload.userName,
+                        },
+                        error: null,
+                  };
+            case 'UPDATE_PROFILE_FAILURE':
+                  return {
+                        ...state,
+                        error: action.payload,
                   };
             default:
                   return state;
